@@ -9,6 +9,7 @@ License:	MIT
 Group:		Libraries/Python
 Source0:	http://pyevent.googlecode.com/files/%{module}-%{version}.tar.gz
 # Source0-md5:	584912c92d08bf005283fb29a47a6e4d
+Patch0:		%{name}-python25.patch
 URL:		http://code.google.com/p/pyevent/
 BuildRequires:	libevent-devel
 BuildRequires:	python-devel >= 1:2.5
@@ -22,6 +23,7 @@ Python extension module for libevent.
 
 %prep
 %setup -q -n %{module}-%{version}
+%patch0 -p1
 
 %build
 python setup.py build_ext
