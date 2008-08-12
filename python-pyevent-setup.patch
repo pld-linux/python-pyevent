@@ -1,0 +1,23 @@
+--- pyevent-0.3/setup.py~	2005-09-12 05:44:04.000000000 +0200
++++ pyevent-0.3/setup.py	2008-08-12 16:23:57.248767676 +0200
+@@ -5,17 +5,12 @@
+ from distutils.core import setup, Extension
+ import glob, os, sys
+ 
+-if glob.glob('/usr/lib/libevent.*'):
++if glob.glob(os.path.join(sys.prefix, sys.lib, 'libevent.*')):
+     print 'found system libevent for', sys.platform
+     event = Extension(name='event',
+                        sources=[ 'event.c' ],
+-                       libraries=[ 'event' ])
+-elif glob.glob('%s/lib/libevent.*' % sys.prefix):
+-    print 'found installed libevent in', sys.prefix
+-    event = Extension(name='event',
+-                       sources=[ 'event.c' ],
+-                       include_dirs=[ '%s/include' % sys.prefix ],
+-                       library_dirs=[ '%s/lib' % sys.prefix ],
++                       include_dirs=[ os.path.join(sys.prefix, 'include') ],
++                       library_dirs=[ os.path.join(sys.prefix, sys.lib) ],
+                        libraries=[ 'event' ])
+ else:
+     ev_dir = None
