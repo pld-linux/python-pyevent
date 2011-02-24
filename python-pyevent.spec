@@ -5,7 +5,7 @@ Summary:	Python extension module for libevent
 Summary(pl.UTF-8):	Moduł rozszerzenia Pythona dla biblioteki libevent
 Name:		python-%{module}
 Version:	0.3
-Release:	7
+Release:	8
 License:	MIT
 Group:		Libraries/Python
 Source0:	http://pyevent.googlecode.com/files/%{module}-%{version}.tar.gz
