@@ -13,6 +13,7 @@ Source0:	http://pyevent.googlecode.com/files/%{module}-%{version}.tar.gz
 Patch0:		%{name}-python25.patch
 Patch1:		%{name}-setup.patch
 URL:		http://code.google.com/p/pyevent/
+BuildRequires:	rpmbuild(macros) >= 1.710
 BuildRequires:	libevent-devel
 BuildRequires:	python-devel >= 1:2.5
 BuildRequires:	python-modules
