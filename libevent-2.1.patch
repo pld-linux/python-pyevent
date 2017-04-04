@@ -1,0 +1,101 @@
+diff -ur pyevent-0.3/event.pyx pyevent-0.3-libevent-2.1/event.pyx
+--- pyevent-0.3/event.pyx	2017-04-04 19:11:05.337824387 +0200
++++ pyevent-0.3-libevent-2.1/event.pyx	2017-04-04 19:20:30.738730651 +0200
+@@ -36,9 +36,12 @@
+         unsigned int tv_sec
+         unsigned int tv_usec
+     
++    struct event_callback_t "event_callback":
++        short evcb_flags
++
+     struct event_t "event":
++        event_callback_t ev_evcallback
+         int   ev_fd
+-        int   ev_flags
+         void *ev_arg
+ 
+     void event_init()
+@@ -52,6 +52,7 @@
+     int  event_del(event_t *ev)
+     int  event_dispatch()
+     int  event_loop(int loop)
++    int  event_loopbreak()
+     int  event_pending(event_t *ev, short, timeval *tv)
+ 
+     int EVLOOP_ONCE
+@@ -65,9 +66,6 @@
+ 
+ __event_exc = None
+ 
+-cdef int __event_sigcb():
+-    return -1
+-
+ cdef void __event_handler(int fd, short evtype, void *arg):
+     (<object>arg).__callback(evtype)
+ 
+@@ -112,8 +110,6 @@
+             event_set(&self.ev, handle, evtype, handler, <void *>self)
+ 
+     def __simple_callback(self, short evtype):
+-        cdef extern int event_gotsig
+-        cdef extern int (*event_sigcb)()
+         global __event_exc
+         try:
+             if self.callback(*self.args) != None:
+@@ -122,24 +118,20 @@
+                 else:
+                     event_add(&self.ev, NULL)
+         except:
++            event_loopbreak()
+             __event_exc = sys.exc_info()
+-            event_sigcb = __event_sigcb
+-            event_gotsig = 1
+         # XXX - account for event.signal() EV_PERSIST
+         if not (evtype & EV_SIGNAL) and \
+            not event_pending(&self.ev, EV_READ|EV_WRITE|EV_SIGNAL|EV_TIMEOUT, NULL):
+             Py_DECREF(self)
+     
+     def __callback(self, short evtype):
+-        cdef extern int event_gotsig
+-        cdef extern int (*event_sigcb)()
+         global __event_exc
+         try:
+             self.callback(self, self.handle, evtype, self.args)
+         except:
++            event_loopbreak()
+             __event_exc = sys.exc_info()
+-            event_sigcb = __event_sigcb
+-            event_gotsig = 1
+         if not event_pending(&self.ev, EV_READ|EV_WRITE|EV_SIGNAL|EV_TIMEOUT, NULL):
+             Py_DECREF(self)
+ 
+@@ -153,7 +156,7 @@
+         self.timeout = timeout
+         if timeout >= 0.0:
+             self.tv.tv_sec = <long>timeout
+-            self.tv.tv_usec = (timeout - <float>self.tv.tv_sec) * 1000000.0
++            self.tv.tv_usec = <long>((timeout - <float>self.tv.tv_sec) * 1000000.0)
+             event_add(&self.ev, &self.tv)
+         else:
+             self.tv.tv_sec = self.tv.tv_usec = 0
+@@ -174,7 +177,7 @@
+     
+     def __repr__(self):
+         return '<event flags=0x%x, handle=%s, callback=%s, arg=%s>' % \
+-               (self.ev.ev_flags, self.handle, self.callback, self.args)
++               (self.ev.ev_evcallback.evcb_flags, self.handle, self.callback, self.args)
+ 
+ cdef class read(event):
+     """read(handle, callback, *args) -> event object
+@@ -266,10 +266,7 @@
+ 
+ def abort():
+     """Abort event dispatch loop."""
+-    cdef extern int event_gotsig
+-    cdef extern int (*event_sigcb)()
+-    event_sigcb = __event_sigcb
+-    event_gotsig = 1
++    event_loopbreak()
+ 
+ # XXX - make sure event queue is always initialized.
+ init()

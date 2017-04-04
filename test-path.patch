@@ -1,0 +1,11 @@
+--- pyevent-0.3/test.py~	2005-01-26 02:43:24.000000000 +0100
++++ pyevent-0.3/test.py	2017-04-04 19:25:57.332923924 +0200
+@@ -1,7 +1,7 @@
+ #!/usr/bin/env python
+ 
+ import glob, os, signal, sys, time, unittest
+-sys.path.insert(0, glob.glob('./build/lib.*')[0])
++sys.path.insert(0, glob.glob('./build-2/lib.*')[0])
+ import event
+ 
+ class EventTest(unittest.TestCase):

@@ -1,17 +1,22 @@
+#
+# Conditional build:
+%bcond_without	tests	# do not perform "make test"
 
-%define 	module	pyevent
+%define		module	pyevent
 
 Summary:	Python extension module for libevent
 Summary(pl.UTF-8):	Moduł rozszerzenia Pythona dla biblioteki libevent
 Name:		python-%{module}
 Version:	0.3
-Release:	10
+Release:	11
 License:	MIT
 Group:		Libraries/Python
 Source0:	http://pyevent.googlecode.com/files/%{module}-%{version}.tar.gz
 # Source0-md5:	584912c92d08bf005283fb29a47a6e4d
 Patch0:		%{name}-python25.patch
 Patch1:		%{name}-setup.patch
+Patch2:		libevent-2.1.patch
+Patch3:		test-path.patch
 URL:		http://code.google.com/p/pyevent/
 BuildRequires:	rpmbuild(macros) >= 1.710
 BuildRequires:	libevent-devel
@@ -31,9 +36,13 @@ Moduł rozszerzenia Pythona dla biblioteki libevent.
 %setup -q -n %{module}-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
-%{__python} setup.py build_ext
+pyrexc event.pyx
+%py_build
+%{?with_tests:./test.py}
 
 %install
 rm -rf $RPM_BUILD_ROOT
