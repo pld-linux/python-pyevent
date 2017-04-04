@@ -8,7 +8,7 @@ Summary:	Python extension module for libevent
 Summary(pl.UTF-8):	Moduł rozszerzenia Pythona dla biblioteki libevent
 Name:		python-%{module}
 Version:	0.3
-Release:	11
+Release:	12
 License:	MIT
 Group:		Libraries/Python
 Source0:	http://pyevent.googlecode.com/files/%{module}-%{version}.tar.gz
@@ -20,6 +20,7 @@ Patch3:		test-path.patch
 URL:		http://code.google.com/p/pyevent/
 BuildRequires:	rpmbuild(macros) >= 1.710
 BuildRequires:	libevent-devel
+BuildRequires:	python-Pyrex
 BuildRequires:	python-devel >= 1:2.5
 BuildRequires:	python-modules
 BuildRequires:	rpm-pythonprov
